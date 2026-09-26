@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# FlyRank specific
+data/images/
+data/*/
+*.sqlite
+*.db
+logs/
