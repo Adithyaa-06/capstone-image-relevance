@@ -1,0 +1,147 @@
+project:
+  name: FlyRank
+  description: "AI Image Understanding & Content Matching Engine"
+  version: "1.0.0"
+
+api:
+  base_url: "http://localhost:8000"
+  endpoints:
+    - path: "/health"
+      method: "GET"
+      description: "Service health check"
+
+    - path: "/images/batch-process"
+      method: "POST"
+      description: "Batch process image files"
+      parameters:
+        - name: "files"
+          type: "file[]"
+          required: true
+
+    - path: "/images/{id}"
+      method: "GET"
+      description: "Get image details by ID"
+      parameters:
+        - name: "id"
+          type: "integer"
+          required: true
+
+    - path: "/images"
+      method: "GET"
+      description: "List all images"
+      parameters:
+        - name: "skip"
+          type: "integer"
+          default: 0
+        - name: "limit"
+          type: "integer"
+          default: 100
+
+    - path: "/posts"
+      method: "POST"
+      description: "Create new post"
+      parameters:
+        - name: "title"
+          type: "string"
+          required: true
+        - name: "content"
+          type: "string"
+          required: true
+
+    - path: "/posts/{id}"
+      method: "GET"
+      description: "Get post by ID"
+      parameters:
+        - name: "id"
+          type: "integer"
+          required: true
+
+    - path: "/posts"
+      method: "GET"
+      description: "List all posts"
+      parameters:
+        - name: "skip"
+          type: "integer"
+          default: 0
+        - name: "limit"
+          type: "integer"
+          default: 100
+
+    - path: "/posts/{post_id}/images"
+      method: "GET"
+      description: "Get image suggestions for post"
+      parameters:
+        - name: "post_id"
+          type: "integer"
+          required: true
+
+    - path: "/posts/suggestions/{id}/approve"
+      method: "POST"
+      description: "Approve image suggestion"
+      parameters:
+        - name: "id"
+          type: "integer"
+          required: true
+        - name: "feedback"
+          type: "string"
+          required: false
+
+    - path: "/posts/suggestions/{id}/reject"
+      method: "POST"
+      description: "Reject image suggestion"
+      parameters:
+        - name: "id"
+          type: "integer"
+          required: true
+        - name: "reason"
+          type: "string"
+          required: true
+        - name: "feedback"
+          type: "string"
+          required: false
+
+    - path: "/eval/precision"
+      method: "GET"
+      description: "Get top-1 precision on evaluation set"
+
+    - path: "/cost-log"
+      method: "GET"
+      description: "Get cost logs"
+      parameters:
+        - name: "skip"
+          type: "integer"
+          default: 0
+        - name: "limit"
+          type: "integer"
+          default: 100
+        - name: "call_type"
+          type: "string"
+          required: false
+
+    - path: "/cost-log/summary"
+      method: "GET"
+      description: "Get cost summary by type"
+
+database:
+  type: "PostgreSQL"
+  extensions:
+    - "pgvector"
+  tables:
+    - "images"
+    - "posts"
+    - "suggestions"
+    - "cost_logs"
+    - "eval_set"
+
+models:
+  vision: "gemini-2.0-flash"
+  embedding: "text-embedding-004"
+
+requirements:
+  - fastapi
+  - sqlalchemy
+  - psycopg2-binary
+  - pgvector
+  - google-generativeai
+  - pydantic
+  - python-multipart
