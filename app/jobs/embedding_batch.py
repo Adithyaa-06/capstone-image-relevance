@@ -23,7 +23,7 @@ def init_gemini():
 def generate_embedding(text: str) -> list:
     try:
         result = genai.embed_content(
-            model="text-embedding-004",
+            model="models/embedding-001",
             content=text,
         )
         return result["embedding"]
@@ -55,7 +55,7 @@ def embed_image_captions(db: Session) -> dict:
             log_gemini_call(
                 db,
                 call_type="embedding",
-                model="text-embedding-004",
+                model="models/embedding-001",
                 cost_usd=0.00002,
                 image_id=image.id,
                 status="success",
@@ -98,7 +98,7 @@ def embed_posts(db: Session) -> dict:
             log_gemini_call(
                 db,
                 call_type="embedding",
-                model="text-embedding-004",
+                model="models/embedding-001",
                 cost_usd=0.00002,
                 post_id=post.id,
                 status="success",
