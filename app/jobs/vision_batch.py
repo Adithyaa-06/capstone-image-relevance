@@ -38,7 +38,7 @@ def process_image_file(image_path: str) -> ImageTag:
         raise ValueError(f"Image file not found: {image_path}")
 
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-3.8-flash")
 
         with open(image_path, "rb") as img_file:
             image_data = img_file.read()

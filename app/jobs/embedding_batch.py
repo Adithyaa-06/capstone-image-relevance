@@ -1,12 +1,15 @@
 """
 Batch generate embeddings for image captions and posts via Gemini.
 """
-
+import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 from sqlalchemy.orm import Session
 from app.models.database import Image, Post
 from app.core.cost_tracker import log_gemini_call
-import os
+
+load_dotenv()  # Load environment variables from .env file
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def init_gemini():
@@ -18,27 +21,14 @@ def init_gemini():
 
 
 def generate_embedding(text: str) -> list:
-    """
-    Generate embedding for a text string using Gemini embeddings API.
-
-    Args:
-        text: Text to embed
-
-    Returns:
-        list: Embedding vector (768-dimensional)
-
-    Raises:
-        ValueError: If embedding generation fails
-    """
     try:
         result = genai.embed_content(
-            model="models/text-embedding-004",
+            model="models/embedding-001",
             content=text,
         )
         return result["embedding"]
     except Exception as e:
         raise ValueError(f"Embedding generation failed: {str(e)}")
-
 
 def embed_image_captions(db: Session) -> dict:
     """
@@ -65,7 +55,7 @@ def embed_image_captions(db: Session) -> dict:
             log_gemini_call(
                 db,
                 call_type="embedding",
-                model="text-embedding-004",
+                model="models/embedding-001",
                 cost_usd=0.00002,
                 image_id=image.id,
                 status="success",
@@ -108,7 +98,7 @@ def embed_posts(db: Session) -> dict:
             log_gemini_call(
                 db,
                 call_type="embedding",
-                model="text-embedding-004",
+                model="models/embedding-001",
                 cost_usd=0.00002,
                 post_id=post.id,
                 status="success",

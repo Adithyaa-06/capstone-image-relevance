@@ -8,7 +8,8 @@ from typing import List
 import json
 from app.models.database import Image
 from app.models.schemas import ImageRecord
-from app.jobs.vision_batch import process_image_file, save_image_record, generate_embedding
+from app.jobs.vision_batch import process_image_file, save_image_record
+from app.jobs.embedding_batch import generate_embedding
 from app.core.database import get_db
 import tempfile
 import os

@@ -16,19 +16,23 @@ from datetime import datetime
 router = APIRouter(prefix="/posts", tags=["suggestions"])
 
 
-def cosine_similarity(vec_a: list, vec_b: list) -> float:
+def cosine_similarity(vec_a, vec_b) -> float:
     """Calculate cosine similarity between two vectors."""
-    if not vec_a or not vec_b:
+    import numpy as np
+    try:
+        vec_a = np.array(vec_a, dtype=float)
+        vec_b = np.array(vec_b, dtype=float)
+
+        dot_product = np.dot(vec_a, vec_b)
+        norm_a = np.linalg.norm(vec_a)
+        norm_b = np.linalg.norm(vec_b)
+
+        if norm_a == 0 or norm_b == 0:
+            return 0.0
+
+        return float(dot_product / (norm_a * norm_b))
+    except Exception:
         return 0.0
-
-    dot_product = sum(a * b for a, b in zip(vec_a, vec_b))
-    norm_a = sum(a * a for a in vec_a) ** 0.5
-    norm_b = sum(b * b for b in vec_b) ** 0.5
-
-    if norm_a == 0 or norm_b == 0:
-        return 0.0
-
-    return dot_product / (norm_a * norm_b)
 
 
 @router.get("/{post_id}/images", response_model=List[SuggestionResponse] | NoMatchResponse)
@@ -44,14 +48,14 @@ async def get_image_suggestions(
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    if not post.embedding:
+    if post.embedding is None:
         raise HTTPException(status_code=400, detail="Post embedding not generated yet")
 
     images = db.query(Image).all()
     scored_images = []
 
     for image in images:
-        if not image.embedding:
+        if image.embedding is None:
             continue
 
         similarity = cosine_similarity(post.embedding, image.embedding)
