@@ -166,7 +166,7 @@ def process_images(db: Session) -> Tuple[int, int]:
 
             processed += 1
             print(f"✓ (id={image_id})")
-            time.sleep(0.5)  # Rate limiting
+            time.sleep(2)  # Rate limiting for API quota
 
         except Exception as e:
             failed += 1
@@ -302,7 +302,7 @@ survival of species and the health of our planet for future generations.""",
             log_gemini_call(
                 db,
                 call_type="embedding",
-                model="text-embedding-004",
+                model="models/gemini-embedding-001",
                 cost_usd=0.00002,
                 post_id=post.id,
                 status="success",
@@ -315,7 +315,7 @@ survival of species and the health of our planet for future generations.""",
             })
 
             print(f"   ✓ {post.title}")
-            time.sleep(0.5)  # Rate limiting
+            time.sleep(2)  # Rate limiting for API quota
 
         except Exception as e:
             print(f"   ✗ Failed to create post: {str(e)}")
