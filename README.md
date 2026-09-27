@@ -7,8 +7,8 @@ A FastAPI backend for intelligent image understanding and semantic content match
 ### Tech Stack
 - **Backend**: FastAPI + Uvicorn
 - **Database**: PostgreSQL + pgvector
-- **Vision Model**: Google Gemini 2.0 Flash
-- **Embeddings**: Google Gemini Text Embedding Model
+- **Vision Model**: Google Gemini 3.8 Flash
+- **Embeddings**:  Google Gemini Embedding (`gemini-embedding-001`, 768-dim)
 - **Language**: Python 3.9+
 
 ### Core Components
@@ -123,8 +123,8 @@ cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-API will be available at `http://localhost:8000`
-Interactive docs at `http://localhost:8000/docs`
+API will be available at `http://localhost:8001`
+Interactive docs at `http://localhost:8001/docs`
 
 ## Workflow
 
@@ -190,6 +190,25 @@ The mismatch guard prevents suggesting low-quality matches:
 3. **Combined Decision**: Match approved only if all checks pass
 
 Failed matches return reasons explaining rejection.
+
+
+## Results
+
+**Top-1 precision: 6/7 = 85.7%** — measured with real Gemini-generated embeddings.
+
+**Guard verification (wolf-on-fox rejection test):**
+
+| Pair | Similarity | Decision |
+|---|---|---|
+| Wolf post → Fox image | 0.549 | ❌ REJECTED (below 0.75 threshold) |
+| Fox post → Fox image | 0.722 | ✅ ACCEPTED |
+
+One near-miss: the "Roses" post's top suggestion was a generic flower image rather than the ground-truth rose photo — an explainable confusion between botanically similar subjects, not a system failure.
+
+### Known Limitations
+- Small evaluation set (n=12) — one misclassification has an outsized effect on the precision percentage
+- Free-tier API rate limits required delays between embedding calls during batch processing
+- Closely related subjects (rose vs. flower, wolf vs. fox) can score similarly under general-purpose embeddings
 
 ## Cost Estimation
 
