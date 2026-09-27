@@ -105,6 +105,8 @@ async def get_image_suggestions(
                 similarity_score=similarity,
                 guard_decision="approved",
                 guard_reason=guard.reason,
+                status="approved",
+                approved_at=datetime.utcnow(),
             )
             db.add(suggestion)
             db.commit()
